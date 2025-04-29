@@ -1,3 +1,6 @@
+import os
+
+
 def get_indexer(indexer_type, base_dir):
     if base_dir is None:
         raise TypeError("base_dir cannot be None")
@@ -7,7 +10,8 @@ def get_indexer(indexer_type, base_dir):
     if indexer_type == "sqlite":
         from .sqlite_indexer import SQLiteIndexer
 
-        return SQLiteIndexer(base_dir)
+        db_path = os.path.join(base_dir, "index.db")
+        return SQLiteIndexer(db_path)
     elif indexer_type == "memory":
         from .memory_indexer import MemoryIndexer
 

@@ -1,15 +1,23 @@
+import glob
 import json
 import os
-import glob
+
 from .indexers import get_indexer
+
 
 class GraphReader:
     def __init__(self, config):
         self.config = config
         self.indexer = get_indexer(config.indexer_type, config.base_dir)
-        self.entity_files = sorted(glob.glob(os.path.join(config.base_dir, "entities", "shard_*.jsonl")))
-        self.relation_files = sorted(glob.glob(os.path.join(config.base_dir, "relations", "shard_*.jsonl")))
-        self.adjacency_file = os.path.join(config.base_dir, "adjacency", "adjacency.jsonl")
+        self.entity_files = sorted(
+            glob.glob(os.path.join(config.base_dir, "entities", "shard_*.jsonl"))
+        )
+        self.relation_files = sorted(
+            glob.glob(os.path.join(config.base_dir, "relations", "shard_*.jsonl"))
+        )
+        self.adjacency_file = os.path.join(
+            config.base_dir, "adjacency", "adjacency.jsonl"
+        )
         self.entity_cache = {}
         self.adjacency_map = self._load_adjacency()
 
@@ -55,3 +63,19 @@ class GraphReader:
 
     def search_by_property(self, key, value):
         return self.indexer.search_by_property(key, value)
+
+    def get_entity_community(self, entity_id):
+        entity = self.get_entity(entity_id)
+        if not entity:
+            return None
+        return entity["properties"].get("community_id")
+
+    def get_community_members(self, community_id):
+        members = []
+        for file in self.entity_files:
+            with open(file, "r", encoding="utf-8") as f:
+                for line in f:
+                    record = json.loads(line)
+                    if record["properties"].get("community_id") == community_id:
+                        members.append(record["entity_id"])
+        return members

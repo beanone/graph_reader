@@ -2,7 +2,8 @@
   <img src="https://raw.githubusercontent.com/beanone/graph_reader/refs/heads/main/docs/assets/logos/banner.svg" alt="Graph Context Banner" width="100%">
 </p>
 
-A Python library for reading and querying graph data stored in JSONL format. The library provides efficient access to entity and relation data with support for different indexing strategies.
+This library enables fast graph traversal and lookup from file-based storage with sharded and indexed structure.
+Now includes community exploration.
 
 [![Python Versions](https://img.shields.io/pypi/pyversions/graph_reader)](https://pypi.org/project/graph_reader)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/beanone/graph_reader/blob/main/LICENSE)
@@ -19,6 +20,7 @@ A Python library for reading and querying graph data stored in JSONL format. The
 - Entity caching for improved performance
 - Adjacency list-based neighbor lookup
 - Property-based entity search
+- Community lookup
 - Configurable cache size
 
 ## Architecture
@@ -97,22 +99,28 @@ pip install graph-reader
 ```python
 from graph_reader import GraphReader, GraphReaderConfig
 
-# Initialize the reader with configuration
-config = GraphReaderConfig(
-    base_dir="path/to/graph/data",
-    indexer_type="sqlite",  # or "memory"
-    cache_size=1000
-)
+config = GraphReaderConfig(base_dir="graph_output")
 reader = GraphReader(config)
 
-# Get entity by ID
-entity = reader.get_entity("entity_id")
+# Get an entity
+entity = reader.get_entity(1)
+print("Entity:", entity)
 
-# Get neighbors of an entity
-neighbors = reader.get_neighbors("entity_id")
+# Get neighbors
+neighbors = reader.get_neighbors(1)
+print("Neighbors:", neighbors)
 
-# Search entities by property
-matching_entities = reader.search_by_property("property_key", "property_value")
+# Search
+matches = reader.search_by_property("name", "Alice")
+print("Matches:", matches)
+
+# Get entity's community
+community = reader.get_entity_community(1)
+print("Community:", community)
+
+# Get members of a community
+members = reader.get_community_members("team_alpha")
+print("Members:", members)
 ```
 
 ## Configuration

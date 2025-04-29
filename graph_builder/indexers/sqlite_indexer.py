@@ -1,6 +1,8 @@
-import sqlite3
 import os
+import sqlite3
+
 from .base_indexer import BaseIndexer
+
 
 class SQLiteIndexer(BaseIndexer):
     def __init__(self, base_dir):
@@ -15,3 +17,7 @@ class SQLiteIndexer(BaseIndexer):
             return [row[0] for row in cursor.fetchall()]
         except sqlite3.OperationalError:
             return []
+
+    def __del__(self):
+        if hasattr(self, "conn"):
+            self.conn.close()
