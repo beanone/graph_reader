@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="200" height="200" fill="#ffffff"/>
+
+    <!-- Decorative Grid -->
+    <g stroke="#e9ecef" stroke-width="1" opacity="0.5">
+        <line x1="0" y1="50" x2="200" y2="50"/>
+        <line x1="0" y1="100" x2="200" y2="100"/>
+        <line x1="0" y1="150" x2="200" y2="150"/>
+        <line x1="50" y1="0" x2="50" y2="200"/>
+        <line x1="100" y1="0" x2="100" y2="200"/>
+        <line x1="150" y1="0" x2="150" y2="200"/>
+    </g>
+
+    <!-- Main Graph Structure -->
+    <g transform="translate(100, 100)">
+        <!-- Central Node -->
+        <circle cx="0" cy="0" r="12" fill="#228be6" stroke="#1864ab" stroke-width="2"/>
+
+        <!-- Satellite Nodes -->
+        <circle cx="-40" cy="-40" r="8" fill="#4dabf7" stroke="#228be6" stroke-width="2"/>
+        <circle cx="40" cy="-40" r="8" fill="#4dabf7" stroke="#228be6" stroke-width="2"/>
+        <circle cx="-40" cy="40" r="8" fill="#4dabf7" stroke="#228be6" stroke-width="2"/>
+        <circle cx="40" cy="40" r="8" fill="#4dabf7" stroke="#228be6" stroke-width="2"/>
+
+        <!-- Connecting Lines -->
+        <line x1="-40" y1="-40" x2="0" y2="0" stroke="#228be6" stroke-width="2"/>
+        <line x1="40" y1="-40" x2="0" y2="0" stroke="#228be6" stroke-width="2"/>
+        <line x1="-40" y1="40" x2="0" y2="0" stroke="#228be6" stroke-width="2"/>
+        <line x1="40" y1="40" x2="0" y2="0" stroke="#228be6" stroke-width="2"/>
+
+        <!-- Directional Arrows -->
+        <path d="M -20 -20 L -15 -25 L -15 -15 Z" fill="#228be6"/>
+        <path d="M 20 -20 L 15 -25 L 15 -15 Z" fill="#228be6"/>
+        <path d="M -20 20 L -15 15 L -15 25 Z" fill="#228be6"/>
+        <path d="M 20 20 L 15 15 L 15 25 Z" fill="#228be6"/>
+    </g>
+
+    <!-- Text -->
+    <text x="100" y="180" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#495057">
+        Graph Builder
+    </text>
+</svg>
