@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/beanone/graph_builder/refs/heads/main/docs/assets/logos/banner.svg" alt="Graph Context Banner" width="100%">
+  <img src="https://raw.githubusercontent.com/beanone/graph_reader/refs/heads/main/docs/assets/logos/banner.svg" alt="Graph Context Banner" width="100%">
 </p>
 
 A Python library for reading and querying graph data stored in JSONL format. The library provides efficient access to entity and relation data with support for different indexing strategies.
 
-[![Python Versions](https://img.shields.io/pypi/pyversions/graph_builder)](https://pypi.org/project/graph_builder)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/beanone/graph_builder/blob/main/LICENSE)
-[![Tests](https://github.com/beanone/graph_builder/actions/workflows/tests.yml/badge.svg)](https://github.com/beanone/graph_builder/actions?query=workflow%3Atests)
-[![Coverage](https://codecov.io/gh/beanone/graph_builder/branch/main/graph/badge.svg)](https://codecov.io/gh/beanone/graph_builder)
+[![Python Versions](https://img.shields.io/pypi/pyversions/graph_reader)](https://pypi.org/project/graph_reader)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/beanone/graph_reader/blob/main/LICENSE)
+[![Tests](https://github.com/beanone/graph_reader/actions/workflows/tests.yml/badge.svg)](https://github.com/beanone/graph_reader/actions?query=workflow%3Atests)
+[![Coverage](https://codecov.io/gh/beanone/graph_reader/branch/main/graph/badge.svg)](https://codecov.io/gh/beanone/graph_reader)
 [![Code Quality](https://img.shields.io/badge/code%20style-ruff-000000)](https://github.com/astral-sh/ruff)
-[![PyPI version](https://img.shields.io/pypi/v/graph_builder)](https://pypi.org/project/graph_builder)
+[![PyPI version](https://img.shields.io/pypi/v/graph_reader)](https://pypi.org/project/graph_reader)
 
 
 ## Features
