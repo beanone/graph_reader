@@ -2,6 +2,7 @@
 
 # Remove Python cache files
 find . -type d -name "__pycache__" -exec rm -r {} +
+find . -type d -name "test_graph_fixture" -exec rm -r {} +
 find . -type f -name "*.pyc" -delete
 find . -type f -name "*.pyo" -delete
 find . -type f -name "*.pyd" -delete

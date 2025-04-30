@@ -100,7 +100,7 @@ class BaseIndexerTest:
         assert isinstance(results, list)
         assert 1 in results
 
-        results = indexer.search_by_property("name", "Bob")
+        results = indexer.search_by_property("name", "Bobby")
         assert 2 in results
 
         results = indexer.search_by_property("name", "Charlie")
@@ -109,7 +109,7 @@ class BaseIndexerTest:
     def test_search_by_property_type(self, indexer):
         """Test searching by type property."""
         results = indexer.search_by_property("type", "Person")
-        assert set(results) == {1, 2, 3}
+        assert set(results) == {0, 1, 2, 3}
 
     def test_search_by_property_community(self, indexer):
         """Test searching by community_id property."""

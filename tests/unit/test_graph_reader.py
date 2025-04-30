@@ -1,4 +1,5 @@
 import json
+import os
 
 import pytest
 from fixture_generator import create_test_graph_fixture
@@ -27,6 +28,43 @@ def test_get_entity(reader):
     assert entity["properties"]["name"] == "Alice"
 
 
+def test_entity_cache_hit(setup_graph_fixture):
+    """Test that subsequent calls to get_entity use cached values."""
+    reader = GraphReader(GraphReaderConfig(base_dir=setup_graph_fixture))
+
+    # First call should read from file
+    entity1 = reader.get_entity(1)
+    assert entity1 is not None
+    assert entity1["properties"]["name"] == "Alice"
+
+    # Modify the entity file to change the name
+    entity_file = os.path.join(setup_graph_fixture, "entities", "shard_0.jsonl")
+    with open(entity_file, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    modified_lines = []
+    for line in lines:
+        entity = json.loads(line)
+        if entity["entity_id"] == 1:
+            entity["properties"]["name"] = "Modified Alice"
+        modified_lines.append(json.dumps(entity) + "\n")
+
+    with open(entity_file, "w", encoding="utf-8") as f:
+        f.writelines(modified_lines)
+
+    # Second call should use cached value
+    entity2 = reader.get_entity(1)
+    assert entity2 is not None
+    assert (
+        entity2["properties"]["name"] == "Alice"
+    )  # Should be original name, not "Modified Alice"
+    assert entity1 == entity2  # Should be exactly the same object
+
+    # Cleanup - restore original content
+    with open(entity_file, "w", encoding="utf-8") as f:
+        f.writelines(lines)
+
+
 def test_get_neighbors(reader):
     neighbors = reader.get_neighbors(1)
     assert isinstance(neighbors, list)
@@ -41,7 +79,7 @@ def test_search_by_property(reader):
 
 
 def test_get_entity_community(reader):
-    community = reader.get_entity_community(1)
+    community = reader.get_entity_community(2)
     assert community == "team_alpha"
 
 

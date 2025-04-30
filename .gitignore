@@ -38,6 +38,7 @@ ENV/
 coverage.xml
 htmlcov/
 .pytest_cache/
+test_graph_fixture/
 
 # Distribution
 dist/
