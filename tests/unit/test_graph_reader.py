@@ -39,7 +39,7 @@ def test_entity_cache_hit(setup_graph_fixture):
 
     # Modify the entity file to change the name
     entity_file = os.path.join(setup_graph_fixture, "entities", "shard_0.jsonl")
-    with open(entity_file, "r", encoding="utf-8") as f:
+    with open(entity_file, encoding="utf-8") as f:
         lines = f.readlines()
 
     modified_lines = []
