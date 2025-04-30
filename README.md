@@ -91,7 +91,7 @@ graph TD
 ## Installation
 
 ```bash
-pip install graph-reader
+pip install beanone-graph
 ```
 
 ## Usage

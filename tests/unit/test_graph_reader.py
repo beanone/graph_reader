@@ -3,8 +3,8 @@ import os
 
 import pytest
 from fixture_generator import create_test_graph_fixture
-from graph_builder.config import GraphReaderConfig
-from graph_builder.reader import GraphReader
+from graph_reader.config import GraphReaderConfig
+from graph_reader.reader import GraphReader
 
 
 @pytest.fixture(scope="session")
