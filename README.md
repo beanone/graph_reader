@@ -5,12 +5,12 @@
 This library enables fast graph traversal and lookup from file-based storage with sharded and indexed structure.
 Now includes community exploration.
 
-[![Python Versions](https://img.shields.io/pypi/pyversions/graph_reader)](https://pypi.org/project/graph_reader)
+[![Python Versions](https://img.shields.io/pypi/pyversions/beanone_graph)](https://pypi.org/project/beanone_graph)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/beanone/graph_reader/blob/main/LICENSE)
 [![Tests](https://github.com/beanone/graph_reader/actions/workflows/tests.yml/badge.svg)](https://github.com/beanone/graph_reader/actions?query=workflow%3Atests)
 [![Coverage](https://codecov.io/gh/beanone/graph_reader/branch/main/graph/badge.svg)](https://codecov.io/gh/beanone/graph_reader)
 [![Code Quality](https://img.shields.io/badge/code%20style-ruff-000000)](https://github.com/astral-sh/ruff)
-[![PyPI version](https://img.shields.io/pypi/v/graph_reader)](https://pypi.org/project/graph_reader)
+[![PyPI version](https://img.shields.io/pypi/v/beanone_graph)](https://pypi.org/project/beanone_graph)
 
 
 ## Features
