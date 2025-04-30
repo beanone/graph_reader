@@ -4,8 +4,35 @@ import sqlite3
 
 import pytest
 from fixture_generator import create_test_graph_fixture
+from graph_builder.indexers import get_indexer
 from graph_builder.indexers.memory_indexer import MemoryIndexer
 from graph_builder.indexers.sqlite_indexer import SQLiteIndexer
+
+
+def test_get_indexer_errors():
+    """Test error cases in get_indexer function."""
+    # Test None base_dir
+    with pytest.raises(TypeError, match="base_dir cannot be None"):
+        get_indexer("memory", None)
+
+    # Test empty base_dir
+    with pytest.raises(ValueError, match="base_dir cannot be empty"):
+        get_indexer("memory", "")
+
+    # Test unknown indexer type
+    with pytest.raises(ValueError, match="Unknown indexer type: invalid"):
+        get_indexer("invalid", "some_dir")
+
+
+def test_get_indexer_success(setup_graph_fixture):
+    """Test successful indexer creation."""
+    # Test memory indexer
+    memory_indexer = get_indexer("memory", setup_graph_fixture)
+    assert isinstance(memory_indexer, MemoryIndexer)
+
+    # Test SQLite indexer
+    sqlite_indexer = get_indexer("sqlite", setup_graph_fixture)
+    assert isinstance(sqlite_indexer, SQLiteIndexer)
 
 
 @pytest.fixture(scope="session")
@@ -51,7 +78,7 @@ def setup_sqlite_db(setup_graph_fixture):
     conn.commit()
     conn.close()
 
-    yield setup_graph_fixture  # Return the base_dir as SQLiteIndexer expects it
+    yield setup_graph_fixture
 
     # Cleanup after all tests
     if os.path.exists(db_path):
@@ -66,7 +93,38 @@ class BaseIndexerTest:
         """Should be overridden by subclasses to provide specific indexer instance."""
         raise NotImplementedError
 
-    # ... rest of the test methods remain the same ...
+    def test_search_by_property_name(self, indexer):
+        """Test searching by name property."""
+        results = indexer.search_by_property("name", "Alice")
+        assert isinstance(results, list)
+        assert 1 in results
+
+        results = indexer.search_by_property("name", "Bob")
+        assert 2 in results
+
+        results = indexer.search_by_property("name", "Charlie")
+        assert 3 in results
+
+    def test_search_by_property_type(self, indexer):
+        """Test searching by type property."""
+        results = indexer.search_by_property("type", "Person")
+        assert set(results) == {1, 2, 3}
+
+    def test_search_by_property_community(self, indexer):
+        """Test searching by community_id property."""
+        results = indexer.search_by_property("community_id", "team_alpha")
+        assert set(results) == {1, 2}
+
+        results = indexer.search_by_property("community_id", "team_beta")
+        assert set(results) == {3}
+
+    def test_search_by_property_not_found(self, indexer):
+        """Test searching for non-existent property value."""
+        results = indexer.search_by_property("name", "David")
+        assert results == []
+
+        results = indexer.search_by_property("non_existent", "value")
+        assert results == []
 
 
 class TestMemoryIndexer(BaseIndexerTest):
@@ -83,3 +141,10 @@ class TestSQLiteIndexer(BaseIndexerTest):
     @pytest.fixture(scope="module")
     def indexer(self, setup_sqlite_db):
         return SQLiteIndexer(setup_sqlite_db)
+
+    def test_sqlite_operational_error(self, setup_sqlite_db):
+        """Test that SQLiteIndexer handles operational errors gracefully."""
+        indexer = SQLiteIndexer(setup_sqlite_db)
+        # Try to search with an invalid column name
+        results = indexer.search_by_property("invalid_column", "value")
+        assert results == []  # Should return empty list on error

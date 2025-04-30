@@ -10,8 +10,7 @@ def get_indexer(indexer_type, base_dir):
     if indexer_type == "sqlite":
         from .sqlite_indexer import SQLiteIndexer
 
-        db_path = os.path.join(base_dir, "index.db")
-        return SQLiteIndexer(db_path)
+        return SQLiteIndexer(base_dir)
     elif indexer_type == "memory":
         from .memory_indexer import MemoryIndexer
 
