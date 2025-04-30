@@ -12,7 +12,7 @@ class MemoryIndexer(BaseIndexer):
         entity_dir = os.path.join(base_dir, "entities")
         if os.path.exists(entity_dir):
             for file in glob.glob(os.path.join(entity_dir, "shard_*.jsonl")):
-                with open(file, "r", encoding="utf-8") as f:
+                with open(file, encoding="utf-8") as f:
                     for line in f:
                         entity = json.loads(line)
                         entity_id = entity["entity_id"]

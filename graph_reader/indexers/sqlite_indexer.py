@@ -29,7 +29,7 @@ class SQLiteIndexer(BaseIndexer):
     def _build_index_from_entities(self, base_dir):
         entity_dir = os.path.join(base_dir, "entities")
         for file in glob.glob(os.path.join(entity_dir, "shard_*.jsonl")):
-            with open(file, "r", encoding="utf-8") as f:
+            with open(file, encoding="utf-8") as f:
                 for line in f:
                     entity = json.loads(line)
                     eid = entity["entity_id"]

@@ -24,7 +24,7 @@ class GraphReader:
     def _load_adjacency(self):
         adjacency = {}
         if os.path.exists(self.adjacency_file):
-            with open(self.adjacency_file, "r", encoding="utf-8") as f:
+            with open(self.adjacency_file, encoding="utf-8") as f:
                 for line in f:
                     record = json.loads(line)
                     adjacency[record["entity_id"]] = record["relations"]
@@ -34,7 +34,7 @@ class GraphReader:
         if entity_id in self.entity_cache:
             return self.entity_cache[entity_id]
         for file in self.entity_files:
-            with open(file, "r", encoding="utf-8") as f:
+            with open(file, encoding="utf-8") as f:
                 for line in f:
                     record = json.loads(line)
                     if record["entity_id"] == entity_id:
@@ -54,7 +54,7 @@ class GraphReader:
             return neighbors
         rel_ids = set(rel_ids)
         for file in self.relation_files:
-            with open(file, "r", encoding="utf-8") as f:
+            with open(file, encoding="utf-8") as f:
                 for line in f:
                     r = json.loads(line)
                     if r["relation_id"] in rel_ids:
@@ -73,7 +73,7 @@ class GraphReader:
     def get_community_members(self, community_id):
         members = []
         for file in self.entity_files:
-            with open(file, "r", encoding="utf-8") as f:
+            with open(file, encoding="utf-8") as f:
                 for line in f:
                     record = json.loads(line)
                     if record["properties"].get("community_id") == community_id:

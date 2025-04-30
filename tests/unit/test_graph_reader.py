@@ -1,8 +1,8 @@
 import json
-import os
 
 import pytest
 from fixture_generator import create_test_graph_fixture
+
 from graph_reader.config import GraphReaderConfig
 from graph_reader.reader import GraphReader
 

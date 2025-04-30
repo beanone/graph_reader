@@ -4,6 +4,7 @@ import sqlite3
 
 import pytest
 from fixture_generator import create_test_graph_fixture
+
 from graph_reader.indexers import get_indexer
 from graph_reader.indexers.memory_indexer import MemoryIndexer
 from graph_reader.indexers.sqlite_indexer import SQLiteIndexer
