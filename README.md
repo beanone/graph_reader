@@ -123,6 +123,130 @@ members = reader.get_community_members("team_alpha")
 print("Members:", members)
 ```
 
+## Search Queries
+
+The library supports powerful search queries with various operators and conditions. Here are comprehensive examples based on a real graph structure:
+
+### Basic Property Search
+
+```python
+# Simple equality
+results = reader.search_by_property("name", "effect")
+
+# Case-insensitive search
+results = reader.search_by_property("name", "nuclear", case_sensitive=False)
+
+# Numeric comparison
+results = reader.search_by_property("community", 155, operator="==")
+```
+
+### Complex Queries
+
+```python
+# Multiple conditions with AND
+query = "name:effect AND community:155"
+results = reader.search(query)
+
+# Multiple conditions with OR
+query = "name:effect OR name:nuclear"
+results = reader.search(query)
+
+# Combining AND and OR
+query = "community:155 AND (levels.0:>=3 OR levels.1:>=17)"
+results = reader.search(query)
+
+# Array value search
+query = "keywords:protein OR keywords:formula"
+results = reader.search(query)
+
+# Multiple properties
+query = "community:155 AND keywords:protein AND levels.0:>=3"
+results = reader.search(query)
+```
+
+### Search Operators
+
+The following operators are supported:
+
+- `:` - Equals (default)
+  - For arrays: checks if the value is in the array
+  - Example: `keywords:protein` matches if "protein" is in the keywords array
+- `:@` - Array membership
+  - Checks if the property value is in the specified array
+  - Example: `type:@['user', 'admin']` matches if type is either 'user' or 'admin'
+- `==` - Equals (explicit)
+- `!=` - Not equals
+- `>` - Greater than
+- `>=` - Greater than or equal
+- `<` - Less than
+- `<=` - Less than or equal
+- `AND` - Logical AND
+- `OR` - Logical OR
+- `(` and `)` - Grouping
+
+### Search Examples by Use Case
+
+#### Entity Search
+```python
+# Find entities by community and level
+query = "community:155 AND levels.0:>=3"
+
+# Find entities by keywords (array contains)
+query = "keywords:protein AND keywords:formula"
+
+# Find entities by name pattern
+query = "name:*nuclear*"
+
+# Find entities with multiple keywords
+query = "keywords:protein AND keywords:home AND keywords:formula"
+
+# Find entities by type (array membership)
+query = "type:@['user', 'admin']"
+```
+
+#### Level-based Search
+```python
+# Find entities with high level 0 values
+query = "levels.0:>=50"
+
+# Find entities with specific level combinations
+query = "levels.0:>=3 AND levels.1:>=17"
+
+# Find entities with no higher level connections
+query = "levels.3:0 AND levels.4:0"
+```
+
+#### Community Search
+```python
+# Find entities in specific communities
+query = "community:155 OR community:245"
+
+# Find entities by community and keywords
+query = "community:155 AND keywords:protein"
+
+# Find entities by community and level distribution
+query = "community:155 AND levels.0:>=3 AND levels.1:>=17"
+
+# Find entities with specific keyword combinations
+query = "keywords:protein AND keywords:home AND keywords:formula"
+```
+
+### Best Practices
+
+1. Use parentheses to group complex conditions
+2. Combine related conditions with AND
+3. Use OR for alternative values
+4. Use numeric operators for ranges
+5. Consider case sensitivity for text searches
+6. For array properties:
+   - Use `:` to check if a value exists in an array
+   - Use `:@` to check if a property value is in a specified array
+   - Combine multiple array conditions with AND to find entities with all specified values
+7. Use wildcards (*) for pattern matching in text fields
+8. Use dot notation for nested properties (e.g., levels.0)
+9. Combine community and level information for precise filtering
+10. Use keyword arrays for semantic search
+
 ## Configuration
 
 The `GraphReaderConfig` class supports the following parameters:

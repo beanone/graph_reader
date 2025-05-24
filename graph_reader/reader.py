@@ -3,6 +3,7 @@ import json
 import os
 
 from .indexers import get_indexer
+from .indexers.search_expression import parse_search_query
 
 
 class GraphReader:
@@ -63,6 +64,24 @@ class GraphReader:
 
     def search_by_property(self, key, value):
         return self.indexer.search_by_property(key, value)
+
+    def search_query(self, query: str):
+        """Search for entities using a search query string.
+
+        Args:
+            query: A search query string in the format:
+                - Simple: "name:alice"
+                - Multiple conditions: "name:alice AND age:>25"
+                - Complex: "(name:alice OR name:bob) AND age:>25"
+                - Array search: "tags:python"
+                - Text search: "description:~python"
+                - Case insensitive: "name:alice/i"
+
+        Returns:
+            List of entity IDs matching the search criteria
+        """
+        expression = parse_search_query(query)
+        return self.indexer.search(expression)
 
     def get_entity_community(self, entity_id):
         entity = self.get_entity(entity_id)
