@@ -2,7 +2,7 @@
 
 __version__ = "0.1.0"
 
-from .reader import GraphReader
 from .config import GraphReaderConfig
+from .reader import GraphReader
 
 __all__ = ["GraphReader", "GraphReaderConfig"]
