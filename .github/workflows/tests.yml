@@ -33,7 +33,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/ -v --cov=src/graph_reader --cov-branch --cov-report=xml
+          pytest tests/ -v --cov=graph_reader --cov-branch --cov-report=xml
 
       - name: Upload coverage
         uses: codecov/codecov-action@v5
