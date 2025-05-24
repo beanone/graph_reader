@@ -1,17 +1,19 @@
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional as TypeOptional, Union
+from typing import Any, Union
 
 from pyparsing import (
     CaselessKeyword,
     Forward,
     Group,
     Literal,
-    OneOrMore,
+    Optional,
     ParseException,
     ParseResults,
     QuotedString,
+    StringEnd,
     Suppress,
     Word,
     alphanums,
@@ -19,14 +21,12 @@ from pyparsing import (
     infixNotation,
     opAssoc,
     printables,
-    ZeroOrMore,
-    StringEnd,
-    Optional,
 )
 
 
 class SearchOperator(Enum):
     """Supported search operators."""
+
     EQUALS = "equals"
     CONTAINS = "contains"
     STARTS_WITH = "starts_with"
@@ -44,6 +44,7 @@ class SearchOperator(Enum):
 @dataclass
 class SearchCondition:
     """A single search condition."""
+
     key: str
     operator: SearchOperator
     value: Any
@@ -53,23 +54,28 @@ class SearchCondition:
 @dataclass
 class SearchExpression:
     """A search expression that can combine multiple conditions."""
+
     operator: SearchOperator
-    conditions: List[Union["SearchExpression", SearchCondition]]
+    conditions: list[Union["SearchExpression", SearchCondition]]
 
 
 class SearchExpressionEvaluator:
     """Evaluates search expressions against entity properties."""
 
     def __init__(self):
-        self._operations: Dict[SearchOperator, Callable[[Any, Any], bool]] = {
+        self._operations: dict[SearchOperator, Callable[[Any, Any], bool]] = {
             SearchOperator.EQUALS: lambda x, y: x == y,
             SearchOperator.CONTAINS: lambda x, y: isinstance(x, list) and y in x,
-            SearchOperator.STARTS_WITH: lambda x, y: isinstance(x, str) and x.startswith(y),
+            SearchOperator.STARTS_WITH: lambda x, y: isinstance(x, str)
+            and x.startswith(y),
             SearchOperator.ENDS_WITH: lambda x, y: isinstance(x, str) and x.endswith(y),
             SearchOperator.CONTAINS_TEXT: lambda x, y: isinstance(x, str) and y in x,
-            SearchOperator.GREATER_THAN: lambda x, y: isinstance(x, (int, float)) and x > y,
-            SearchOperator.LESS_THAN: lambda x, y: isinstance(x, (int, float)) and x < y,
-            SearchOperator.MATCHES: lambda x, y: isinstance(x, str) and bool(re.match(y, x)),
+            SearchOperator.GREATER_THAN: lambda x, y: isinstance(x, int | float)
+            and x > y,
+            SearchOperator.LESS_THAN: lambda x, y: isinstance(x, int | float)
+            and x < y,
+            SearchOperator.MATCHES: lambda x, y: isinstance(x, str)
+            and bool(re.match(y, x)),
             SearchOperator.IN: lambda x, y: isinstance(y, list) and x in y,
         }
 
@@ -80,7 +86,9 @@ class SearchExpressionEvaluator:
             return str(val).lower()
         return val
 
-    def evaluate_condition(self, condition: SearchCondition, props: Dict[str, Any]) -> bool:
+    def evaluate_condition(
+        self, condition: SearchCondition, props: dict[str, Any]
+    ) -> bool:
         """Evaluate a single search condition against entity properties."""
         if condition.key not in props:
             return False
@@ -95,7 +103,9 @@ class SearchExpressionEvaluator:
         if condition.operator == SearchOperator.IN:
             # For array membership, we want to check if the property value is in the search value list
             return isinstance(search_value, list) and prop_value in search_value
-        elif isinstance(prop_value, list) and condition.operator == SearchOperator.EQUALS:
+        elif (
+            isinstance(prop_value, list) and condition.operator == SearchOperator.EQUALS
+        ):
             # For array contains, we want to check if the search value is in the property value list
             return search_value in prop_value
 
@@ -104,7 +114,7 @@ class SearchExpressionEvaluator:
             SearchOperator.CONTAINS_TEXT,
             SearchOperator.STARTS_WITH,
             SearchOperator.ENDS_WITH,
-            SearchOperator.MATCHES
+            SearchOperator.MATCHES,
         }:
             prop_value = str(prop_value)
             search_value = str(search_value)
@@ -115,7 +125,9 @@ class SearchExpressionEvaluator:
 
         # Special handling for text operations
         if condition.operator == SearchOperator.CONTAINS_TEXT:
-            print(f"[DEBUG] CONTAINS_TEXT: prop_value='{prop_value}', search_value='{search_value}'")
+            print(
+                f"[DEBUG] CONTAINS_TEXT: prop_value='{prop_value}', search_value='{search_value}'"
+            )
             return search_value in prop_value
         elif condition.operator == SearchOperator.STARTS_WITH:
             return prop_value.startswith(search_value)
@@ -124,7 +136,9 @@ class SearchExpressionEvaluator:
         elif condition.operator == SearchOperator.MATCHES:
             return bool(re.match(search_value, prop_value))
         elif condition.operator == SearchOperator.GREATER_THAN:
-            print(f"[DEBUG] GREATER_THAN: prop_value={prop_value} ({type(prop_value)}), search_value={search_value} ({type(search_value)})")
+            print(
+                f"[DEBUG] GREATER_THAN: prop_value={prop_value} ({type(prop_value)}), search_value={search_value} ({type(search_value)})"
+            )
             return prop_value > search_value
 
         # For other operations, use the standard comparison
@@ -132,14 +146,16 @@ class SearchExpressionEvaluator:
         return compare(prop_value, search_value)
 
     def evaluate_expression(
-        self, expression: SearchExpression | SearchCondition, props: Dict[str, Any]
+        self, expression: SearchExpression | SearchCondition, props: dict[str, Any]
     ) -> bool:
         """Evaluate a search expression against entity properties."""
         if isinstance(expression, SearchCondition):
             return self.evaluate_condition(expression, props)
 
         if expression.operator == SearchOperator.AND:
-            results = [self.evaluate_expression(cond, props) for cond in expression.conditions]
+            results = [
+                self.evaluate_expression(cond, props) for cond in expression.conditions
+            ]
             print(f"[DEBUG] AND: conditions={results}, props={props}")
             return all(results)
         elif expression.operator == SearchOperator.OR:
@@ -162,12 +178,16 @@ class SearchQueryParser:
             | QuotedString("'", escChar="\\")
             | Word(printables, excludeChars=":()/")
         )
+
         # Case sensitivity: default True, set to False if /i is present
         def case_sensitive_action(tokens):
             # For case insensitive, we want to return False
             # For case sensitive, we want to return True
-            return not tokens or tokens[0] != '/i'
-        case_sensitive = (Literal('/i') | Literal('')).setParseAction(case_sensitive_action)
+            return not tokens or tokens[0] != "/i"
+
+        case_sensitive = (Literal("/i") | Literal("")).setParseAction(
+            case_sensitive_action
+        )
 
         # Operators - order matters! More specific operators first
         matches = Literal(":*")
@@ -193,12 +213,14 @@ class SearchQueryParser:
 
         # Array value parser
         array_value = (
-            Suppress('[') +
-            Optional(delimitedList(
-                QuotedString('"', escChar="\\") |
-                Word(printables, excludeChars='[],"/')  # Also exclude / here
-            ).setParseAction(lambda t: list(t))) +
-            Suppress(']')
+            Suppress("[")
+            + Optional(
+                delimitedList(
+                    QuotedString('"', escChar="\\")
+                    | Word(printables, excludeChars='[],"/')  # Also exclude / here
+                ).setParseAction(lambda t: list(t))
+            )
+            + Suppress("]")
         )
 
         # Build the condition parser with array support
@@ -247,7 +269,7 @@ class SearchQueryParser:
                 key=key,
                 operator=SearchOperator.IN,
                 value=value,
-                case_sensitive=case_sensitive
+                case_sensitive=case_sensitive,
             )
 
         # For non-array values, use the standard format
@@ -262,7 +284,7 @@ class SearchQueryParser:
             ":~": SearchOperator.CONTAINS_TEXT,
             ":^": SearchOperator.STARTS_WITH,
             ":$": SearchOperator.ENDS_WITH,
-            ":@": SearchOperator.IN
+            ":@": SearchOperator.IN,
         }
 
         # Convert numeric values
@@ -274,7 +296,7 @@ class SearchQueryParser:
             key=key,
             operator=operator_map[op],
             value=value,
-            case_sensitive=case_sensitive
+            case_sensitive=case_sensitive,
         )
 
     def _parse_not(self, tokens):
@@ -310,7 +332,7 @@ class SearchQueryParser:
             result = self.parser.parseString(query, parseAll=True)
             return result[0]
         except ParseException as e:
-            raise ValueError(f"Invalid search query: {str(e)}")
+            raise ValueError(f"Invalid search query: {e!s}") from e
 
 
 def parse_search_query(query: str) -> SearchExpression:
