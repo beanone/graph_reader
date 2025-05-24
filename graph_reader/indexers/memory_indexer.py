@@ -1,11 +1,15 @@
 import glob
 import json
 import os
-from typing import Any, List, Union
+from typing import Any
 
 from .base_indexer import BaseIndexer
-from .search_expression import (SearchExpression, SearchCondition,
-                                SearchExpressionEvaluator, SearchOperator)
+from .search_expression import (
+    SearchCondition,
+    SearchExpression,
+    SearchExpressionEvaluator,
+    SearchOperator,
+)
 
 
 class MemoryIndexer(BaseIndexer):
@@ -27,14 +31,14 @@ class MemoryIndexer(BaseIndexer):
         key: str,
         value: Any,
         operation: str = "equals",
-        case_sensitive: bool = True
-    ) -> List[int]:
+        case_sensitive: bool = True,
+    ) -> list[int]:
         """Search for entities by property value with various operations."""
         operator = SearchOperator(operation)
         condition = SearchCondition(key, operator, value, case_sensitive)
         return self.search(condition)
 
-    def search(self, expression: SearchExpression | SearchCondition) -> List[int]:
+    def search(self, expression: SearchExpression | SearchCondition) -> list[int]:
         """Search for entities using a search expression.
 
         Args:

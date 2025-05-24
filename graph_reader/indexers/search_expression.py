@@ -72,8 +72,7 @@ class SearchExpressionEvaluator:
             SearchOperator.CONTAINS_TEXT: lambda x, y: isinstance(x, str) and y in x,
             SearchOperator.GREATER_THAN: lambda x, y: isinstance(x, int | float)
             and x > y,
-            SearchOperator.LESS_THAN: lambda x, y: isinstance(x, int | float)
-            and x < y,
+            SearchOperator.LESS_THAN: lambda x, y: isinstance(x, int | float) and x < y,
             SearchOperator.MATCHES: lambda x, y: isinstance(x, str)
             and bool(re.match(y, x)),
             SearchOperator.IN: lambda x, y: isinstance(y, list) and x in y,

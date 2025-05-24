@@ -150,13 +150,6 @@ def test_regex_operations():
 
 def test_case_sensitivity():
     """Test case sensitivity behavior for different search operations."""
-    # Test data
-    test_data = {
-        "name": "John Doe",
-        "email": "john.doe@example.com",
-        "tags": ["Python", "Developer"],
-        "status": "ACTIVE",
-    }
 
     # Test exact match
     expr = parse_search_query('name:"John Doe"')
