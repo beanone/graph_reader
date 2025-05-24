@@ -1,8 +1,8 @@
-"""Graph Reader - A library for reading graph data structures."""
+"""Graph Reader package."""
 
 __version__ = "0.1.0"
 
-from .config import GraphReaderConfig
 from .reader import GraphReader
+from .config import GraphReaderConfig
 
 __all__ = ["GraphReader", "GraphReaderConfig"]
