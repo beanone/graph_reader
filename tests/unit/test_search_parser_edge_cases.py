@@ -1,5 +1,6 @@
 def test_parse_or_with_grouped_condition():
     from graph_reader.indexers.search_expression import SearchQueryParser
+
     parser = SearchQueryParser()
     expr = parser.parse("name:foo OR (name:bar)")
     # The first condition is a SearchCondition

@@ -1,5 +1,4 @@
 import json
-import os
 from pathlib import Path
 
 
@@ -33,9 +32,9 @@ def create_test_graph_fixture(base_dir: str) -> None:
                 "email": "john@example.com",
                 "age": 30,
                 "tags": ["python", "developer"],
-                "status": "active"
+                "status": "active",
             },
-            "last_update_time": "2025-05-23T06:12:50.515324+00:00Z"
+            "last_update_time": "2025-05-23T06:12:50.515324+00:00Z",
         },
         {
             "entity_id": 2,
@@ -45,9 +44,9 @@ def create_test_graph_fixture(base_dir: str) -> None:
                 "email": "jane@example.com",
                 "age": 25,
                 "tags": ["python", "designer"],
-                "status": "active"
+                "status": "active",
             },
-            "last_update_time": "2025-05-23T06:12:50.515324+00:00Z"
+            "last_update_time": "2025-05-23T06:12:50.515324+00:00Z",
         },
         {
             "entity_id": 3,
@@ -57,9 +56,9 @@ def create_test_graph_fixture(base_dir: str) -> None:
                 "email": "bob@example.com",
                 "age": 35,
                 "tags": ["admin", "manager"],
-                "status": "inactive"
+                "status": "inactive",
             },
-            "last_update_time": "2025-05-23T06:12:50.515324+00:00Z"
+            "last_update_time": "2025-05-23T06:12:50.515324+00:00Z",
         },
         {
             "entity_id": 4,
@@ -69,10 +68,10 @@ def create_test_graph_fixture(base_dir: str) -> None:
                 "email": "alice@example.com",
                 "age": 28,
                 "tags": ["python", "tester"],
-                "status": "active"
+                "status": "active",
             },
-            "last_update_time": "2025-05-23T06:12:50.515324+00:00Z"
-        }
+            "last_update_time": "2025-05-23T06:12:50.515324+00:00Z",
+        },
     ]
 
     with open(logs_dir / "entity_updates.jsonl", "w", encoding="utf-8") as f:
@@ -85,22 +84,16 @@ def create_test_graph_fixture(base_dir: str) -> None:
             "relation_id": 0,
             "source_id": 1,
             "target_id": 2,
-            "properties": {
-                "weight": 8,
-                "z": 6.414269805898186
-            },
-            "update_time": "2025-05-23T06:12:51.573800+00:00Z"
+            "properties": {"weight": 8, "z": 6.414269805898186},
+            "update_time": "2025-05-23T06:12:51.573800+00:00Z",
         },
         {
             "relation_id": 1,
             "source_id": 2,
             "target_id": 3,
-            "properties": {
-                "weight": 6,
-                "z": 5.123456789012345
-            },
-            "update_time": "2025-05-23T06:12:51.573800+00:00Z"
-        }
+            "properties": {"weight": 6, "z": 5.123456789012345},
+            "update_time": "2025-05-23T06:12:51.573800+00:00Z",
+        },
     ]
 
     # Write relation logs
@@ -124,22 +117,10 @@ def create_test_graph_fixture(base_dir: str) -> None:
 
     # Create adjacency map
     adjacency_map = [
-        {
-            "entity_id": 1,
-            "relations": [0]
-        },
-        {
-            "entity_id": 2,
-            "relations": [0, 1]
-        },
-        {
-            "entity_id": 3,
-            "relations": [1]
-        },
-        {
-            "entity_id": 4,
-            "relations": []
-        }
+        {"entity_id": 1, "relations": [0]},
+        {"entity_id": 2, "relations": [0, 1]},
+        {"entity_id": 3, "relations": [1]},
+        {"entity_id": 4, "relations": []},
     ]
 
     with open(adjacency_dir / "adjacency.jsonl", "w", encoding="utf-8") as f:

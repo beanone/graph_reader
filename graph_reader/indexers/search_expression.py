@@ -132,7 +132,7 @@ class SearchExpressionEvaluator:
         return compare(prop_value, search_value)
 
     def evaluate_expression(
-        self, expression: Union[SearchExpression, SearchCondition], props: Dict[str, Any]
+        self, expression: SearchExpression | SearchCondition, props: Dict[str, Any]
     ) -> bool:
         """Evaluate a search expression against entity properties."""
         if isinstance(expression, SearchCondition):

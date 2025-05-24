@@ -34,10 +34,18 @@ class MemoryIndexer(BaseIndexer):
         condition = SearchCondition(key, operator, value, case_sensitive)
         return self.search(condition)
 
-    def search(self, expression: Union[SearchExpression, SearchCondition]) -> List[int]:
-        """Search for entities using a search expression."""
+    def search(self, expression: SearchExpression | SearchCondition) -> List[int]:
+        """Search for entities using a search expression.
+
+        Args:
+            expression: A search expression or condition to evaluate
+
+        Returns:
+            List of entity IDs matching the search criteria
+        """
+        evaluator = SearchExpressionEvaluator()
         return [
-            eid
-            for eid, props in self.map.items()
-            if self.evaluator.evaluate_expression(expression, props)
+            entity_id
+            for entity_id, props in self.map.items()
+            if evaluator.evaluate_expression(expression, props)
         ]

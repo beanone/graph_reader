@@ -1,6 +1,6 @@
-from typing import Any, List, Union
+from typing import Any
 
-from .search_expression import SearchExpression, SearchCondition
+from .search_expression import SearchCondition, SearchExpression
 
 
 class BaseIndexer:
@@ -9,8 +9,8 @@ class BaseIndexer:
         key: str,
         value: Any,
         operation: str = "equals",
-        case_sensitive: bool = True
-    ) -> List[int]:
+        case_sensitive: bool = True,
+    ) -> list[int]:
         """Search for entities by property value with various operations.
 
         Args:
@@ -31,7 +31,7 @@ class BaseIndexer:
         """
         raise NotImplementedError
 
-    def search(self, expression: Union[SearchExpression, SearchCondition]) -> List[int]:
+    def search(self, expression: SearchExpression | SearchCondition) -> list[int]:
         """Search for entities using a search expression.
 
         Args:
@@ -39,10 +39,13 @@ class BaseIndexer:
 
         Returns:
             List of entity IDs matching the search criteria
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses
         """
         raise NotImplementedError
 
-    def search_query(self, query: str) -> List[int]:
+    def search_query(self, query: str) -> list[int]:
         """Search for entities using a search query string.
 
         Args:
@@ -58,5 +61,6 @@ class BaseIndexer:
             List of entity IDs matching the search criteria
         """
         from .search_expression import parse_search_query
+
         expression = parse_search_query(query)
         return self.search(expression)

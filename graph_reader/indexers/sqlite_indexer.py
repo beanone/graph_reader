@@ -2,11 +2,15 @@ import glob
 import json
 import os
 import sqlite3
-from typing import Any, List, Union
+from typing import Any, Union
 
 from .base_indexer import BaseIndexer
-from .search_expression import (SearchExpression, SearchCondition,
-                                SearchExpressionEvaluator, SearchOperator)
+from .search_expression import (
+    SearchCondition,
+    SearchExpression,
+    SearchExpressionEvaluator,
+    SearchOperator,
+)
 
 
 class SQLiteIndexer(BaseIndexer):
@@ -54,14 +58,14 @@ class SQLiteIndexer(BaseIndexer):
         key: str,
         value: Any,
         operation: str = "equals",
-        case_sensitive: bool = True
-    ) -> List[int]:
+        case_sensitive: bool = True,
+    ) -> list[int]:
         """Search for entities by property value with various operations."""
         operator = SearchOperator(operation)
         condition = SearchCondition(key, operator, value, case_sensitive)
         return self.search(condition)
 
-    def search(self, expression: Union[SearchExpression, SearchCondition]) -> List[int]:
+    def search(self, expression: Union[SearchExpression, SearchCondition]) -> list[int]:
         """Search for entities using a search expression."""
         cursor = self.conn.cursor()
         cursor.execute("SELECT entity_id, properties FROM entity_index")
