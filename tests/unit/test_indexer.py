@@ -96,27 +96,27 @@ class BaseIndexerTest:
 
     def test_search_by_property_name(self, indexer):
         """Test searching by name property."""
-        results = indexer.search_by_property("name", "Alice")
+        results = indexer.search_by_property("name", "John Doe")
         assert isinstance(results, list)
         assert 1 in results
 
-        results = indexer.search_by_property("name", "Bobby")
+        results = indexer.search_by_property("name", "Jane Smith")
         assert 2 in results
 
-        results = indexer.search_by_property("name", "Charlie")
+        results = indexer.search_by_property("name", "Bob Johnson")
         assert 3 in results
 
     def test_search_by_property_type(self, indexer):
         """Test searching by type property."""
-        results = indexer.search_by_property("type", "Person")
-        assert set(results) == {0, 1, 2, 3}
+        results = indexer.search_by_property("type", "user")
+        assert set(results) == {1, 2, 4}
 
-    def test_search_by_property_community(self, indexer):
-        """Test searching by community_id property."""
-        results = indexer.search_by_property("community_id", "team_alpha")
-        assert set(results) == {1, 2}
+    def test_search_by_property_status(self, indexer):
+        """Test searching by status property."""
+        results = indexer.search_by_property("status", "active")
+        assert set(results) == {1, 2, 4}
 
-        results = indexer.search_by_property("community_id", "team_beta")
+        results = indexer.search_by_property("status", "inactive")
         assert set(results) == {3}
 
     def test_search_by_property_not_found(self, indexer):
@@ -140,12 +140,12 @@ class TestSQLiteIndexer(BaseIndexerTest):
     """Test class for SQLiteIndexer implementation."""
 
     @pytest.fixture(scope="module")
-    def indexer(self, setup_sqlite_db):
-        return SQLiteIndexer(setup_sqlite_db)
+    def indexer(self, setup_graph_fixture):
+        return SQLiteIndexer(setup_graph_fixture)
 
-    def test_sqlite_operational_error(self, setup_sqlite_db):
+    def test_sqlite_operational_error(self, setup_graph_fixture):
         """Test that SQLiteIndexer handles operational errors gracefully."""
-        indexer = SQLiteIndexer(setup_sqlite_db)
+        indexer = SQLiteIndexer(setup_graph_fixture)
         # Try to search with an invalid column name
         results = indexer.search_by_property("invalid_column", "value")
         assert results == []  # Should return empty list on error
