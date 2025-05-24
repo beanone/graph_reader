@@ -147,6 +147,7 @@ class SearchExpressionEvaluator:
                 self.evaluate_expression(cond, props) for cond in expression.conditions
             )
         else:
+            print("DEBUG: Unsupported expression operator branch hit")
             raise ValueError(f"Unsupported expression operator: {expression.operator}")
 
 
