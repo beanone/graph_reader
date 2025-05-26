@@ -96,13 +96,13 @@ def test_entity_cache_eviction(setup_graph_fixture):
     # Load first entity
     entity1 = reader.get_entity(1)
     assert entity1 is not None
-    assert 1 in reader.entity_cache
+    assert "1" in reader.entity_cache
 
     # Load second entity, should evict first
     entity2 = reader.get_entity(2)
     assert entity2 is not None
-    assert 2 in reader.entity_cache
-    assert 1 not in reader.entity_cache
+    assert "2" in reader.entity_cache
+    assert "1" not in reader.entity_cache
 
 
 def test_entity_not_found(setup_graph_fixture):
