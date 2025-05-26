@@ -9,11 +9,12 @@ import pytest
 
 from graph_reader.config import GraphReaderConfig as Config
 from graph_reader.reader import GraphReader
-from graph_reader.schema import Entity, EntityProperties, Relation, AdjacencyRecord
+from graph_reader.schema import AdjacencyRecord, Entity, EntityProperties, Relation
 
 
 class DateTimeEncoder(json.JSONEncoder):
     """Custom JSON encoder for datetime objects."""
+
     def default(self, obj):
         if isinstance(obj, datetime):
             return obj.isoformat()
@@ -38,7 +39,7 @@ def temp_dir():
 
         # Generate fixed UUIDs to be used by tests
         entity_uuid = uuid4()
-        relation_uuid = uuid4() # Assuming relation can also have UUID as ID
+        relation_uuid = uuid4()  # Assuming relation can also have UUID as ID
 
         # Write test entities
         with open(entity_file, "w", encoding="utf-8") as f:
@@ -46,7 +47,7 @@ def temp_dir():
             entity1 = Entity(
                 entity_id=1,
                 properties=EntityProperties(name="Alice", community_id=1),
-                last_update_time=datetime.now()
+                last_update_time=datetime.now(),
             )
             f.write(json.dumps(entity1.model_dump(), cls=DateTimeEncoder) + "\n")
 
@@ -54,15 +55,15 @@ def temp_dir():
             entity2 = Entity(
                 entity_id="user_123",
                 properties=EntityProperties(name="Bob", community_id="group_a"),
-                last_update_time=datetime.now()
+                last_update_time=datetime.now(),
             )
             f.write(json.dumps(entity2.model_dump(), cls=DateTimeEncoder) + "\n")
 
             # UUID
             entity3 = Entity(
-                entity_id=entity_uuid, # Use pre-generated UUID
+                entity_id=entity_uuid,  # Use pre-generated UUID
                 properties=EntityProperties(name="Charlie", community_id=entity_uuid),
-                last_update_time=datetime.now()
+                last_update_time=datetime.now(),
             )
             f.write(json.dumps(entity3.model_dump(), cls=DateTimeEncoder) + "\n")
 
@@ -70,18 +71,15 @@ def temp_dir():
             entity4 = Entity(
                 entity_id="user:123:active",
                 properties=EntityProperties(name="Dave", community_id="group:b"),
-                last_update_time=datetime.now()
+                last_update_time=datetime.now(),
             )
             f.write(json.dumps(entity4.model_dump(), cls=DateTimeEncoder) + "\n")
 
             # External system ID (as string)
             entity5 = Entity(
                 entity_id="salesforce:001xx000003DIloAAG",
-                properties=EntityProperties(
-                    name="Eve",
-                    community_id="acme:sales"
-                ),
-                last_update_time=datetime.now()
+                properties=EntityProperties(name="Eve", community_id="acme:sales"),
+                last_update_time=datetime.now(),
             )
             f.write(json.dumps(entity5.model_dump(), cls=DateTimeEncoder) + "\n")
 
@@ -89,11 +87,11 @@ def temp_dir():
         with open(relation_file, "w", encoding="utf-8") as f:
             # Integer IDs
             relation1 = Relation(
-                relation_id=1, # Assuming relation_id can be int
+                relation_id=1,  # Assuming relation_id can be int
                 source_id=1,
-                target_id="user_123", # Changed from 2 for consistency with adj data
+                target_id="user_123",  # Changed from 2 for consistency with adj data
                 type="follows",
-                last_update_time=datetime.now()
+                last_update_time=datetime.now(),
             )
             f.write(json.dumps(relation1.model_dump(), cls=DateTimeEncoder) + "\n")
 
@@ -103,17 +101,17 @@ def temp_dir():
                 source_id="user_123",
                 target_id=1,
                 type="follows",
-                last_update_time=datetime.now()
+                last_update_time=datetime.now(),
             )
             f.write(json.dumps(relation2.model_dump(), cls=DateTimeEncoder) + "\n")
 
             # UUID IDs
             relation3 = Relation(
-                relation_id=relation_uuid, # Use pre-generated UUID for relation
+                relation_id=relation_uuid,  # Use pre-generated UUID for relation
                 source_id=entity_uuid,
                 target_id="user_123",
-                type="knows", # Changed type for variety
-                last_update_time=datetime.now()
+                type="knows",  # Changed type for variety
+                last_update_time=datetime.now(),
             )
             f.write(json.dumps(relation3.model_dump(), cls=DateTimeEncoder) + "\n")
 
@@ -122,38 +120,53 @@ def temp_dir():
             # Integer IDs for entity 1
             adj1 = AdjacencyRecord(
                 entity_id=1,
-                relations=[1, "rel_123"] # Entity 1 is source for rel 1 and target for rel_123
+                relations=[
+                    1,
+                    "rel_123",
+                ],  # Entity 1 is source for rel 1 and target for rel_123
             )
             f.write(json.dumps(adj1.model_dump(), cls=DateTimeEncoder) + "\n")
 
             # String IDs for entity "user_123"
             adj2 = AdjacencyRecord(
                 entity_id="user_123",
-                relations=[1, "rel_123", relation_uuid] # user_123 is target for rel 1, source for rel_123, target for relation_uuid
+                relations=[
+                    1,
+                    "rel_123",
+                    relation_uuid,
+                ],  # user_123 is target for rel 1, source for rel_123, target for relation_uuid
             )
             f.write(json.dumps(adj2.model_dump(), cls=DateTimeEncoder) + "\n")
 
             # UUID IDs for entity_uuid
             adj3 = AdjacencyRecord(
                 entity_id=entity_uuid,
-                relations=[relation_uuid] # entity_uuid is source for relation_uuid
+                relations=[relation_uuid],  # entity_uuid is source for relation_uuid
             )
             f.write(json.dumps(adj3.model_dump(), cls=DateTimeEncoder) + "\n")
 
-        yield temp_dir_path, entity_uuid, relation_uuid # Return path and generated UUIDs
+        yield (
+            temp_dir_path,
+            entity_uuid,
+            relation_uuid,
+        )  # Return path and generated UUIDs
 
 
 @pytest.fixture
 def reader(temp_dir):
     """Create a GraphReader instance with test data."""
-    temp_dir_path, entity_uuid, relation_uuid = temp_dir # Unpack, we only need the path here
+    (
+        temp_dir_path,
+        entity_uuid,
+        relation_uuid,
+    ) = temp_dir  # Unpack, we only need the path here
     config = Config(base_dir=temp_dir_path, indexer_type="memory", cache_size=100)
     return GraphReader(config)
 
 
 def test_get_entity_with_different_id_types(reader, temp_dir):
     """Test getting entities with different ID types."""
-    _, entity_uuid, _ = temp_dir # Get the fixed entity_uuid
+    _, entity_uuid, _ = temp_dir  # Get the fixed entity_uuid
 
     # Integer ID
     entity = reader.get_entity(1)
@@ -166,7 +179,7 @@ def test_get_entity_with_different_id_types(reader, temp_dir):
     assert entity["properties"]["name"] == "Bob"
 
     # UUID
-    entity = reader.get_entity(entity_uuid) # Use the fixed UUID
+    entity = reader.get_entity(entity_uuid)  # Use the fixed UUID
     assert entity is not None
     assert entity["properties"]["name"] == "Charlie"
 
@@ -183,7 +196,7 @@ def test_get_entity_with_different_id_types(reader, temp_dir):
 
 def test_get_neighbors_with_different_id_types(reader, temp_dir):
     """Test getting neighbors with different ID types."""
-    _, entity_uuid, relation_uuid = temp_dir # Get fixed UUIDs
+    _, entity_uuid, relation_uuid = temp_dir  # Get fixed UUIDs
 
     # Integer ID (Entity 1)
     # Expected relations: 1 (source_id=1), "rel_123" (target_id=1)
@@ -192,7 +205,6 @@ def test_get_neighbors_with_different_id_types(reader, temp_dir):
     neighbor_ids = {r["relation_id"] for r in neighbors}
     assert 1 in neighbor_ids
     assert "rel_123" in neighbor_ids
-
 
     # String ID (Entity "user_123")
     # Expected relations: 1 (target_id="user_123"), "rel_123" (source_id="user_123"), relation_uuid (target_id="user_123")
@@ -203,17 +215,16 @@ def test_get_neighbors_with_different_id_types(reader, temp_dir):
     assert "rel_123" in neighbor_ids
     assert str(relation_uuid) in neighbor_ids
 
-
     # UUID (Entity entity_uuid)
     # Expected relations: relation_uuid (source_id=entity_uuid)
-    neighbors = reader.get_neighbors(entity_uuid) # Use fixed UUID
+    neighbors = reader.get_neighbors(entity_uuid)  # Use fixed UUID
     assert len(neighbors) == 1
     assert neighbors[0]["relation_id"] == str(relation_uuid)
 
 
 def test_get_community_members_with_different_id_types(reader, temp_dir):
     """Test getting community members with different ID types."""
-    _, entity_uuid, _ = temp_dir # Get fixed entity_uuid
+    _, entity_uuid, _ = temp_dir  # Get fixed entity_uuid
 
     # Integer community ID
     members = reader.get_community_members(1)
@@ -226,7 +237,7 @@ def test_get_community_members_with_different_id_types(reader, temp_dir):
     assert members[0] == "user_123"
 
     # UUID community ID
-    members = reader.get_community_members(entity_uuid) # Use fixed UUID
+    members = reader.get_community_members(entity_uuid)  # Use fixed UUID
     assert len(members) == 1
     assert members[0] == str(entity_uuid)
 
@@ -243,7 +254,7 @@ def test_get_community_members_with_different_id_types(reader, temp_dir):
 
 def test_get_entity_community_with_different_id_types(reader, temp_dir):
     """Test getting entity community with different ID types."""
-    _, entity_uuid, _ = temp_dir # Get fixed entity_uuid
+    _, entity_uuid, _ = temp_dir  # Get fixed entity_uuid
 
     # Integer ID
     community = reader.get_entity_community(1)
@@ -254,7 +265,7 @@ def test_get_entity_community_with_different_id_types(reader, temp_dir):
     assert community == "group_a"
 
     # UUID
-    community = reader.get_entity_community(entity_uuid) # Use fixed UUID
+    community = reader.get_entity_community(entity_uuid)  # Use fixed UUID
     assert community == str(entity_uuid)
 
     # Composite ID
@@ -272,9 +283,11 @@ def test_special_string_ids(reader):
     entity = Entity(
         entity_id="",
         properties=EntityProperties(name="Empty"),
-        last_update_time=datetime.now()
+        last_update_time=datetime.now(),
     )
-    with open(os.path.join(reader.config.base_dir, "entities", "shard_0.jsonl"), "a") as f:
+    with open(
+        os.path.join(reader.config.base_dir, "entities", "shard_0.jsonl"), "a"
+    ) as f:
         f.write(json.dumps(entity.model_dump(), cls=DateTimeEncoder) + "\n")
 
     result = reader.get_entity("")
@@ -285,9 +298,11 @@ def test_special_string_ids(reader):
     entity = Entity(
         entity_id="   ",
         properties=EntityProperties(name="Whitespace"),
-        last_update_time=datetime.now()
+        last_update_time=datetime.now(),
     )
-    with open(os.path.join(reader.config.base_dir, "entities", "shard_0.jsonl"), "a") as f:
+    with open(
+        os.path.join(reader.config.base_dir, "entities", "shard_0.jsonl"), "a"
+    ) as f:
         f.write(json.dumps(entity.model_dump(), cls=DateTimeEncoder) + "\n")
 
     result = reader.get_entity("   ")
@@ -298,9 +313,11 @@ def test_special_string_ids(reader):
     entity = Entity(
         entity_id="user_123_测试",
         properties=EntityProperties(name="Unicode"),
-        last_update_time=datetime.now()
+        last_update_time=datetime.now(),
     )
-    with open(os.path.join(reader.config.base_dir, "entities", "shard_0.jsonl"), "a") as f:
+    with open(
+        os.path.join(reader.config.base_dir, "entities", "shard_0.jsonl"), "a"
+    ) as f:
         f.write(json.dumps(entity.model_dump(), cls=DateTimeEncoder) + "\n")
 
     result = reader.get_entity("user_123_测试")
@@ -311,9 +328,11 @@ def test_special_string_ids(reader):
     entity = Entity(
         entity_id="user@123#test",
         properties=EntityProperties(name="Special"),
-        last_update_time=datetime.now()
+        last_update_time=datetime.now(),
     )
-    with open(os.path.join(reader.config.base_dir, "entities", "shard_0.jsonl"), "a") as f:
+    with open(
+        os.path.join(reader.config.base_dir, "entities", "shard_0.jsonl"), "a"
+    ) as f:
         f.write(json.dumps(entity.model_dump(), cls=DateTimeEncoder) + "\n")
 
     result = reader.get_entity("user@123#test")

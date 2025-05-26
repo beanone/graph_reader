@@ -4,7 +4,7 @@ This module defines the schema for graph entities, relations, and their properti
 using Pydantic models for validation and type safety.
 """
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -15,15 +15,16 @@ class EntityProperties(BaseModel):
     This model defines the structure and validation rules for entity properties.
     All properties are nullable to allow for flexible entity types.
     """
+
     name: str | None = Field(None, description="Entity name")
     type: str | None = Field(None, description="Entity type")
     email: str | None = Field(None, description="Entity email")
     age: int | None = Field(None, description="Entity age")
-    tags: List[str] | None = Field(None, description="Entity tags")
+    tags: list[str] | None = Field(None, description="Entity tags")
     status: str | None = Field(None, description="Entity status")
     community_id: Any | None = Field(
         None,
-        description="Entity community identifier. Can be any type that uniquely identifies a community."
+        description="Entity community identifier. Can be any type that uniquely identifies a community.",
     )
     description: str | None = Field(None, description="Entity description")
 
@@ -49,6 +50,7 @@ class Entity(BaseModel):
 
     This model defines the structure and validation rules for graph entities.
     """
+
     entity_id: Any = Field(..., description="Unique identifier for the entity")
     properties: EntityProperties = Field(..., description="Entity properties")
     last_update_time: datetime | None = Field(None, description="Last update timestamp")
@@ -61,7 +63,7 @@ class Entity(BaseModel):
             return None
         if isinstance(v, str):
             # Remove Z suffix if present
-            if v.endswith('Z'):
+            if v.endswith("Z"):
                 v = v[:-1]
             return datetime.fromisoformat(v)
         return v
@@ -72,11 +74,14 @@ class Relation(BaseModel):
 
     This model defines the structure and validation rules for graph relations.
     """
+
     relation_id: Any = Field(..., description="Unique identifier for the relation")
     source_id: Any = Field(..., description="Source entity ID")
     target_id: Any = Field(..., description="Target entity ID")
     type: str = Field("default", description="Relation type")
-    properties: Dict[str, Any] = Field(default_factory=dict, description="Relation properties")
+    properties: dict[str, Any] = Field(
+        default_factory=dict, description="Relation properties"
+    )
     last_update_time: datetime | None = Field(None, description="Last update timestamp")
 
     @field_validator("last_update_time", mode="before")
@@ -87,7 +92,7 @@ class Relation(BaseModel):
             return None
         if isinstance(v, str):
             # Remove Z suffix if present
-            if v.endswith('Z'):
+            if v.endswith("Z"):
                 v = v[:-1]
             return datetime.fromisoformat(v)
         return v
@@ -98,5 +103,8 @@ class AdjacencyRecord(BaseModel):
 
     This model defines the structure and validation rules for adjacency list entries.
     """
+
     entity_id: Any = Field(..., description="Entity ID")
-    relations: List[Any] = Field(default_factory=list, description="List of relation IDs")
+    relations: list[Any] = Field(
+        default_factory=list, description="List of relation IDs"
+    )

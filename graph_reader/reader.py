@@ -1,9 +1,7 @@
 import glob
 import json
 import os
-from datetime import datetime
-from typing import Union, Any, Hashable
-from uuid import UUID
+from typing import Any
 
 from .indexers import get_indexer
 from .indexers.search_expression import parse_search_query
@@ -99,7 +97,7 @@ class GraphReader:
         Returns:
             list[dict]: List of relation records.
         """
-        neighbors = []
+        neighbors: list[dict] = []
         # Convert entity_id to string for dictionary lookup
         key = self._make_hashable(entity_id)
         rel_ids = self.adjacency_map.get(key, [])
@@ -173,6 +171,9 @@ class GraphReader:
                     record = json.loads(line)
                     # Validate entity record
                     entity = Entity(**record)
-                    if self._make_hashable(entity.properties.community_id) == community_key:
+                    if (
+                        self._make_hashable(entity.properties.community_id)
+                        == community_key
+                    ):
                         members.append(entity.entity_id)
         return members
